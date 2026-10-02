@@ -4,7 +4,7 @@
 html { scroll-behavior:smooth; overflow-x:clip; }
 body { background:var(--bg); color:var(--cream); font-family:Jost,system-ui,-apple-system,"Segoe UI",sans-serif; line-height:1.65; overflow-x:clip; }
 a { color:inherit; text-decoration:none; }
-img { max-width:100%; display:block; }
+img { max-width:100%; height:auto; display:block; }
 button, input, select, textarea { font:inherit; color:inherit; }
 .wrap { width:min(1160px,100% - 32px); margin-inline:auto; }
 h1,h2,h3 { font-family:"Cormorant Garamond",Georgia,"Times New Roman",serif; font-weight:600; line-height:1.08; }
