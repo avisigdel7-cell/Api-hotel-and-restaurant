@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  var WHATSAPP = "9779848985412";
+  var WHATSAPP = "9779858085412";
   var BIZ = "Api Hotel & Restaurant";
   document.documentElement.classList.add("js");
 
