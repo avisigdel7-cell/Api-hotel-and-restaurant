@@ -70,6 +70,44 @@
     a.rel = "noopener";
   });
 
+  /* Opening announcement (home page, once per visit) */
+  var ann = $("announce");
+  if (ann) {
+    var annCard = ann.querySelector(".announce-card"), annLast = null, annKey = "api-announce-closed";
+    var seen = false;
+    try { seen = sessionStorage.getItem(annKey) === "1"; } catch (e) {}
+    var annFocusables = function () {
+      return all("a[href], button", annCard).filter(function (e) { return e.offsetParent !== null; });
+    };
+    var annKeys = function (e) {
+      if (e.key === "Escape") { closeAnn(); return; }
+      if (e.key !== "Tab") return;
+      var f = annFocusables(); if (!f.length) return;
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+    };
+    var closeAnn = function () {
+      if (ann.hidden) return;
+      ann.classList.remove("show");
+      document.removeEventListener("keydown", annKeys);
+      document.body.style.overflow = "";
+      try { sessionStorage.setItem(annKey, "1"); } catch (e) {}
+      setTimeout(function () { ann.hidden = true; }, 450);
+      if (annLast && annLast.focus) annLast.focus();
+    };
+    var openAnn = function () {
+      annLast = document.activeElement;
+      ann.hidden = false;
+      document.body.style.overflow = "hidden";
+      void ann.offsetWidth; // apply the hidden state first so the fade-in always runs
+      ann.classList.add("show");
+      document.addEventListener("keydown", annKeys);
+      setTimeout(function () { annCard.focus(); }, 60);
+    };
+    all("[data-close]", ann).forEach(function (el) { el.addEventListener("click", closeAnn); });
+    if (!seen && !location.hash) setTimeout(openAnn, 900);
+  }
+
   /* Back to top */
   var toTop = $("toTop");
   if (toTop) {
