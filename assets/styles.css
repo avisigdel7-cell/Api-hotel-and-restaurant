@@ -302,7 +302,9 @@ footer .fine { grid-column:1/-1; font-size:.84rem; border-top:1px solid var(--li
 .arch::before { content:""; position:absolute; inset:-14px -14px 14px 14px; border:1px solid var(--gold); border-radius:999px 999px 0 0; opacity:.55; }
 .arch img { position:relative; width:100%; height:auto; aspect-ratio:4/5; object-fit:cover; border-radius:999px 999px 0 0; border:1px solid var(--gold); padding:8px; background:var(--bg); }
 @media (max-width:980px) { .inside { grid-template-columns:1fr; gap:40px; } .arch { width:min(320px,86%); } }
-.shots { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:64px; }
+.shots { display:grid; grid-template-columns:repeat(6,1fr); gap:22px; margin-top:64px; }
+.shot { grid-column:span 2; }
+.shot:nth-child(n+4) { grid-column:span 3; }
 .shot { position:relative; border:1px solid var(--line); background:var(--card); padding:8px; transition:border-color .3s, transform .3s; }
 .shot:hover { border-color:var(--gold); }
 .shot picture { display:block; overflow:hidden; }
@@ -311,8 +313,7 @@ footer .fine { grid-column:1/-1; font-size:.84rem; border-top:1px solid var(--li
 .shot figcaption { padding:14px 8px 8px; display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; }
 .shot figcaption b { font-family:"Cormorant Garamond",Georgia,serif; font-size:1.4rem; color:var(--gold); line-height:1.1; }
 .shot figcaption span { color:var(--muted); font-size:.86rem; }
-.shot:nth-child(2) { margin-top:22px; margin-bottom:-22px; }
-@media (max-width:980px) { .shots { grid-template-columns:1fr; margin-top:44px; } .shot:nth-child(2) { margin:0; } }
+@media (max-width:980px) { .shots { grid-template-columns:1fr; margin-top:44px; } .shot, .shot:nth-child(n+4) { grid-column:auto; } }
 
 /* dish cards */
 .dishes { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:46px; }
