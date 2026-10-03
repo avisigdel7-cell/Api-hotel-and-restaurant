@@ -379,6 +379,9 @@ footer .fine { grid-column:1/-1; font-size:.84rem; border-top:1px solid var(--li
 .announce-ctas .btn { width:100%; }
 .announce-fine { margin-top:18px; font-size:.82rem; color:var(--muted); }
 .announce-fine a { color:var(--gold-l); text-decoration:underline; text-underline-offset:3px; }
+.announce-sound { position:absolute; top:24px; left:24px; z-index:2; border:1px solid rgba(210,174,102,.45); background:rgba(12,10,8,.6); color:var(--gold-l); border-radius:999px; padding:8px 14px; font-size:.78rem; letter-spacing:.08em; cursor:pointer; transition:background .2s; }
+.announce-sound:hover { background:rgba(210,174,102,.16); }
+@media (max-width:560px) { .announce-sound { top:20px; left:20px; padding:7px 12px; font-size:.72rem; } }
 @media (max-width:560px) { .announce-card { padding:40px 20px 24px; } .announce-emblem { width:76px; height:76px; margin-bottom:16px; } .announce-kicker { letter-spacing:.22em; font-size:.68rem; gap:8px; } .announce-kicker::before, .announce-kicker::after { width:18px; } .announce-title { font-size:1.85rem; } .announce-text { font-size:.95rem; margin-top:12px; } .announce-points { margin-top:14px; gap:6px 14px; font-size:.82rem; } .announce-ctas { margin-top:20px; } .announce-fine { margin-top:14px; } }
 @media (prefers-reduced-motion: reduce) { .announce-card::before, .announce-mandala, .announce-sparks i, .announce-title em { animation:none; } .announce-sparks { display:none; } }
 @media print { .announce { display:none !important; } }

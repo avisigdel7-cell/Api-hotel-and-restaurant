@@ -70,6 +70,56 @@
     a.rel = "noopener";
   });
 
+  /* A short golden chime, composed in code (no audio file, nothing downloaded) */
+  var chimeCtx = null;
+  function playChime() {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return Promise.reject(new Error("no audio"));
+    chimeCtx = chimeCtx || new AC();
+    // when sound is blocked, resume() can wait forever, so give up after a moment
+    var started = new Promise(function (ok, fail) {
+      chimeCtx.resume().then(ok, fail);
+      setTimeout(function () { fail(new Error("blocked")); }, 400);
+    });
+    return started.then(function () {
+      if (chimeCtx.state !== "running") throw new Error("blocked");
+      var ctx = chimeCtx, now = ctx.currentTime + 0.05;
+      var master = ctx.createGain();
+      master.gain.setValueAtTime(0.0001, now);
+      master.gain.exponentialRampToValueAtTime(0.22, now + 0.08);
+      master.gain.setValueAtTime(0.22, now + 2.1);
+      master.gain.exponentialRampToValueAtTime(0.0001, now + 2.9);
+      // soft echo for a hall-like shimmer
+      var delay = ctx.createDelay(); delay.delayTime.value = 0.28;
+      var fb = ctx.createGain(); fb.gain.value = 0.25;
+      var wet = ctx.createGain(); wet.gain.value = 0.35;
+      delay.connect(fb); fb.connect(delay); delay.connect(wet); wet.connect(ctx.destination);
+      master.connect(ctx.destination); master.connect(delay);
+      function bell(freq, t, len, vol) {
+        [[1, 1], [2.01, 0.32], [3.02, 0.12]].forEach(function (h) {
+          var o = ctx.createOscillator(), g = ctx.createGain();
+          o.type = "sine"; o.frequency.value = freq * h[0];
+          g.gain.setValueAtTime(0.0001, t);
+          g.gain.exponentialRampToValueAtTime(vol * h[1], t + 0.015);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+          o.connect(g); g.connect(master); o.start(t); o.stop(t + len + 0.05);
+        });
+      }
+      function pad(freq, t, len, vol) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = "triangle"; o.frequency.value = freq;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.linearRampToValueAtTime(vol, t + 0.6);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+        o.connect(g); g.connect(master); o.start(t); o.stop(t + len + 0.05);
+      }
+      // warm chord underneath (D major add 9), then a rising bell arpeggio
+      [146.83, 220.0, 293.66, 369.99].forEach(function (f) { pad(f, now, 2.9, 0.07); });
+      [587.33, 739.99, 880.0, 1108.73, 1318.51, 1760.0].forEach(function (f, i) { bell(f, now + 0.1 + i * 0.13, 1.8, 0.28); });
+      bell(2217.46, now + 0.95, 1.8, 0.16);
+    });
+  }
+
   /* Opening announcement (home page, once per visit) */
   var ann = $("announce");
   if (ann) {
@@ -91,6 +141,7 @@
       ann.classList.remove("show");
       document.removeEventListener("keydown", annKeys);
       document.body.style.overflow = "";
+      if (chimeCtx && chimeCtx.state === "running") chimeCtx.suspend(); // stop the sound when the notice closes
       try { sessionStorage.setItem(annKey, "1"); } catch (e) {}
       setTimeout(function () { ann.hidden = true; }, 450);
       if (annLast && annLast.focus) annLast.focus();
@@ -103,7 +154,12 @@
       ann.classList.add("show");
       document.addEventListener("keydown", annKeys);
       setTimeout(function () { annCard.focus(); }, 60);
+      playChime().catch(function () { if (annSound) annSound.hidden = false; });
     };
+    var annSound = $("annSound");
+    if (annSound) annSound.addEventListener("click", function () {
+      playChime().then(function () { annSound.textContent = "♪ Playing"; setTimeout(function () { annSound.hidden = true; }, 3000); }).catch(function () {});
+    });
     all("[data-close]", ann).forEach(function (el) { el.addEventListener("click", closeAnn); });
     if (!seen && !location.hash) setTimeout(openAnn, 900);
   }
